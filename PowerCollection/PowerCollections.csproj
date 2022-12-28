@@ -4,7 +4,7 @@
 		<PackageId>Cthulhu-tech.PowerCollections</PackageId>
 		<Authors>Cthulhu-tech</Authors>
 		<Description>...</Description>
-		<VersionPrefix>0.0.2</VersionPrefix>
+		<VersionPrefix>0.0.3</VersionPrefix>
 		<VersionSuffix>beta</VersionSuffix>
 		<Deterministic>false</Deterministic>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
