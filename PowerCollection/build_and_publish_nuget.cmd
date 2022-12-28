@@ -1,3 +1,3 @@
-dotnet pack --configuration Release
+powershell -executionpolicy bypass -File C:\Users\lrulc\vsc\DevTools_lab02\PowerCollection\build_and_publish_nuget.ps1
 
-dotnet nuget push "./bin/Release/Cthulhu-tech.PowerCollections.0.0.3-beta.nupkg" --source github --api-key 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
+@pause
