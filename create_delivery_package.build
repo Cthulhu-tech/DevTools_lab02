@@ -23,7 +23,7 @@
                 </arg>
             </exec>           
             <exec program="dotnet">
-                <arg line="build --configuration Release --property:source=true" />
+                <arg line="pack --configuration Release --property:source=true" />
                 <arg>
                     <path>
                         <path refid="pathPowerCollection" />
@@ -37,7 +37,7 @@
             <echo message="CONTINUE ASSAMBLY PROJECT..." /> 
             <echo message="----------------" />
             <exec program="dotnet">
-                <arg line="build --configuration Release --property:source=true" />
+                <arg line="pack --configuration Release --property:source=true" />
                 <arg>
                     <path>
                         <path refid="pathPowerCollection" />
