@@ -42,7 +42,7 @@ namespace ProgramStack {
         /// </summary>
         /// <param name="data">The value of the stack</param>
         /// <returns>A bool</returns>
-        public internal bool Push(T data)
+        public bool Push(T data)
         {
             if (top >= MAX)
             {
@@ -60,7 +60,7 @@ namespace ProgramStack {
         /// </summary>
         /// <param name="data">The value of the stack</param>
         /// <returns>A you type</returns>
-        public internal T Pop()
+        public T Pop()
         {
             if (top < 0)
             {
@@ -78,7 +78,7 @@ namespace ProgramStack {
         /// </summary>
         /// <param name="data">The value of the stack</param>
         /// <returns>A you type</returns>
-        public internal void PrintStack()
+        public void PrintStack()
         {
             if (top < 0)
             {

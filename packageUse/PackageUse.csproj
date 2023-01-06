@@ -13,11 +13,4 @@
     </PackageReference>
   </ItemGroup>
 
-    <Target Name="Zip" BeforeTargets="AfterBuild">
-        <ZipDirectory
-            SourceDirectory="./"
-            DestinationFile="..\zipPackage.zip"
-            Overwrite=="true" />
-    </Target>
-
 </Project>

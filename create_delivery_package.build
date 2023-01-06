@@ -1,1 +1,51 @@
-docfx docfx_project\docfx.json --serve
+<project default="build">
+
+    <path id="pathPowerCollection">
+        <pathelement dir="./PowerCollection" />
+    </path>
+
+    <path id="pathPowerCollectionTest">
+        <pathelement dir="./PowerCollection.Test" />
+    </path>
+
+    <exec program="docfx">
+        <arg line="docfx_project\docfx.json --build" />
+    </exec>
+
+    <trycatch>
+        <try>
+            <exec program="dotnet">
+                <arg line="test" />
+                <arg>
+                    <path>
+                        <path refid="pathPowerCollectionTest" />
+                    </path>
+                </arg>
+            </exec>           
+            <exec program="dotnet">
+                <arg line="build --configuration Release --property:source=true" />
+                <arg>
+                    <path>
+                        <path refid="pathPowerCollection" />
+                    </path>
+                </arg>
+            </exec>
+        </try>
+        <catch>    
+            <echo message="----------------" />
+            <echo message="!!!TEST ERROR!!!" />
+            <echo message="CONTINUE ASSAMBLY PROJECT..." /> 
+            <echo message="----------------" />
+            <exec program="dotnet">
+                <arg line="build --configuration Release --property:source=true" />
+                <arg>
+                    <path>
+                        <path refid="pathPowerCollection" />
+                    </path>
+                </arg>
+            </exec>
+        </catch>
+        
+    </trycatch>
+
+</project>
