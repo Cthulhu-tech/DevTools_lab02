@@ -13,4 +13,18 @@
 		<PackageProjectUrl>https://github.com/Cthulhu-tech/DevTools_lab02</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/Cthulhu-tech/DevTools_lab02</RepositoryUrl>
 	</PropertyGroup>
+	<ItemGroup>
+		<FilePath Condition="$(source) == false" Include="'./bin/bin' , './../docfx_project/doc'" />
+    	<FilePath Condition="$(source) == true" Include="'./bin/bin' , './../docfx_project/doc', './src'" />
+		<Distination Include="../PowerCollection_$([System.DateTime]::Now.Year).$([System.DateTime]::Now.Month).$([System.DateTime]::Now.Day)_$(VersionPrefix).zip" />
+	</ItemGroup>
+	<Target Name="Zip" BeforeTargets="AfterBuild">
+		<Exec Command="powershell Rename-Item -Path './bin/$(ConfigurationName)' -NewName 'bin'" />
+		<Exec Command="powershell Rename-Item -Path './../docfx_project/_site' -NewName 'doc'" />
+		<Exec Command="powershell Rename-Item -Path './PowerCollections' -NewName 'src'" />
+      	<Exec Command="powershell Compress-Archive -Path @(FilePath) -DestinationPath @(Distination) -Force" />
+  		<Exec Command="powershell Rename-Item -Path './bin/bin' -NewName '$(ConfigurationName)'" />
+		<Exec Command="powershell Rename-Item -Path './../docfx_project/doc' -NewName '_site'" />
+		<Exec Command="powershell Rename-Item -Path './src' -NewName 'PowerCollections'" />
+	</Target>
 </Project>
