@@ -1,51 +1,49 @@
-<project default="build">
-
-    <path id="pathPowerCollection">
-        <pathelement dir="./PowerCollection" />
-    </path>
-
-    <path id="pathPowerCollectionTest">
-        <pathelement dir="./PowerCollection.Test" />
-    </path>
-
-    <exec program="docfx">
-        <arg line="docfx_project\docfx.json --build" />
-    </exec>
-
-    <trycatch>
-        <try>
-            <exec program="dotnet">
-                <arg line="test" />
-                <arg>
-                    <path>
-                        <path refid="pathPowerCollectionTest" />
-                    </path>
-                </arg>
-            </exec>           
-            <exec program="dotnet">
-                <arg line="pack --configuration Release --property:source=true" />
-                <arg>
-                    <path>
-                        <path refid="pathPowerCollection" />
-                    </path>
-                </arg>
-            </exec>
-        </try>
-        <catch>    
-            <echo message="----------------" />
-            <echo message="!!!TEST ERROR!!!" />
-            <echo message="CONTINUE ASSAMBLY PROJECT..." /> 
-            <echo message="----------------" />
-            <exec program="dotnet">
-                <arg line="pack --configuration Release --property:source=true" />
-                <arg>
-                    <path>
-                        <path refid="pathPowerCollection" />
-                    </path>
-                </arg>
-            </exec>
-        </catch>
-        
-    </trycatch>
-
-</project>
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Solution Include="PowerCollection/*.sln" />
+    <SourceCode Include="true" />
+    <TargetElement Include="Release" />
+    <BuildAfterTestError Include="true" />
+    <FilePath Condition="@(SourceCode) == 'false'" Include="'PowerCollection/bin/bin' , 'docfx_project/doc'" />
+    <FilePath Condition="@(SourceCode) == 'true'" Include="'PowerCollection/bin/bin' , 'docfx_project/doc', 'PowerCollection/src'" />
+    <Distination Include="./PowerCollection_$([System.DateTime]::Now.Year).$([System.DateTime]::Now.Month).$([System.DateTime]::Now.Day)_$(VersionPrefix).zip" />
+  </ItemGroup>
+  <Target Name="TaskOne">
+    <Exec Command="dotnet test" WorkingDirectory="$(MSBuildProjectDirectory)\PowerCollection.Tests" />
+  </Target>
+  <Target Name="TaskTwo">
+    <Exec Command="docfx docfx_project\docfx.json --build" WorkingDirectory="$(MSBuildProjectDirectory)" />
+  </Target>
+  <Target Name="TaskThree">
+    <Exec Command="dotnet pack --configuration @(TargetElement) --property:source=@(SourceCode)" WorkingDirectory="$(MSBuildProjectDirectory)\PowerCollection" />
+  </Target>
+  <Target Name="ErrorMessage">
+    <Message Text="Test Error!" />
+  </Target>
+  <Target Name="ErrorIgnore">
+    <Message Text="Test Error! Ignore error..." />
+    <CallTarget Targets="TaskTwo" />
+    <CallTarget Targets="TaskThree" />
+    <CallTarget Targets="Zip" />
+  </Target>
+  <Target Name="BeforeBuild">
+    <CallTarget Targets="TaskOne" />
+    <CallTarget Targets="TaskTwo" />
+    <CallTarget Targets="TaskThree" />
+    <CallTarget Targets="Zip" />
+    <OnError ExecuteTargets="ErrorIgnore" Condition="@(BuildAfterTestError) == 'true'" />
+    <OnError ExecuteTargets="ErrorMessage" Condition="@(BuildAfterTestError) == 'false'" />
+  </Target>
+  <Target Name="Zip">
+		<Exec Command="powershell Rename-Item -Path 'PowerCollection/bin/@(TargetElement)' -NewName 'bin'" />
+		<Exec Command="powershell Rename-Item -Path 'PowerCollection/PowerCollections' -NewName 'src'" />
+      	<Exec Command="powershell Compress-Archive -Path @(FilePath) -DestinationPath @(Distination) -Force" />
+  		<Exec Command="powershell Rename-Item -Path 'PowerCollection/bin/bin' -NewName '@(TargetElement)'" />
+		<Exec Command="powershell Rename-Item -Path 'PowerCollection/src' -NewName 'PowerCollections'" />
+  </Target>
+  <Target Name="Build">
+    <CallTarget Targets="BeforeBuild" />
+    <MSBuild Projects="@(Solution)" Targets="Build" />
+  </Target>
+</Project>
