@@ -3,7 +3,7 @@
     {
       "src": [
         {
-          "files": [ "**/**.cs" ],
+          "files": [ "**/PowerCollections/**.cs" ],
           "src": "..",
           "exclude": [
             "**/bin/**",
