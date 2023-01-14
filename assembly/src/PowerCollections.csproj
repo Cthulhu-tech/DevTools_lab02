@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>NET7.0</TargetFramework>
+		<PackageId>Cthulhu-tech.PowerCollections</PackageId>
+		<Authors>Cthulhu-tech</Authors>
+		<Description>...</Description>
+		<VersionSuffix>beta</VersionSuffix>
+		<Deterministic>false</Deterministic>
+		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+		<RepositoryType>git</RepositoryType>
+		<Copyright>Copyright 2022 (c)</Copyright>
+		<AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+		<PackageProjectUrl>https://github.com/Cthulhu-tech/DevTools_lab02</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/Cthulhu-tech/DevTools_lab02</RepositoryUrl>
+	</PropertyGroup>
+</Project>
