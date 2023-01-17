@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="Tasks\MSBuild.Community.Tasks.Targets"/>
+  <PropertyGroup>
+    <SourceCode>true</SourceCode>
+    <TargetElement>Release</TargetElement>
+    <BuildAfterTestError>true</BuildAfterTestError>
+  </PropertyGroup>
+  <ItemGroup>
+    <Solution Include="PowerCollection/*.sln" />
+    <DocumentationDir Include="docfx_project/doc/**/*.*" />
+    <FileSourceCode Include="PowerCollection/PowerCollections/*.cs" />
+    <FileCsproj Include="PowerCollection/PowerCollections.csproj" />
+  </ItemGroup>
+  <Target Name="TaskOne">
+    <Exec Command="dotnet test" WorkingDirectory="$(MSBuildProjectDirectory)\PowerCollection.Tests" />
+  </Target>
+  <Target Name="ErrorMessage">
+    <Message Text="Test Error!" />
+  </Target>
+  <Target Name="ErrorIgnore">
+    <Message Text="Test Error! Ignore error..." />
+    <CallTarget Targets="Create" />
+    <CallTarget Targets="Zip" />
+  </Target>
+  <Target Name="BeforeBuild">
+    <CallTarget Targets="TaskOne" />
+    <CallTarget Targets="Create" />
+    <CallTarget Targets="Zip" />
+    <OnError ExecuteTargets="ErrorIgnore" Condition="$(BuildAfterTestError) == 'true'" />
+    <OnError ExecuteTargets="ErrorMessage" Condition="$(BuildAfterTestError) == 'false'" />
+  </Target>
+  <Target Name="Zip">
+    <Copy SourceFiles="@(DocumentationDir)" DestinationFolder="assembly/doc/%(RecursiveDir)" />
+    <Copy SourceFiles="@(FileSourceCode)" DestinationFolder="assembly/src/PowerCollections" Condition="$(SourceCode) == 'true'" />
+    <Copy SourceFiles="@(FileCsproj)" DestinationFolder="assembly/src" Condition="$(SourceCode) == 'true'" />
+    <Copy SourceFiles="@(Solution)" DestinationFolder="assembly/src" Condition="$(SourceCode) == 'true'" />
+    <Exec Command="xcopy  $(MSBuildProjectDirectory)\PowerCollection\bin assembly\bin /e /i /h" />
+    <ZipDirectory SourceDirectory="assembly" Overwrite="true" DestinationFile="$(MSBuildProjectDirectory)\PowerCollection_$([System.DateTime]::Now.ToString(yyyyMMdd))_$(Major).$(Minor).$(Build).zip" />
+   </Target>
+   <Target Name="Create">
+     <Version VersionFile="number.txt" BuildType="Increment" RevisionType="None">
+       <Output TaskParameter="Major" PropertyName="Major" />
+       <Output TaskParameter="Minor" PropertyName="Minor" />
+       <Output TaskParameter="Build" PropertyName="Build" />
+       <Output TaskParameter="Revision" PropertyName="Revision" />
+      </Version>
+    <RemoveDir Directories="$(MSBuildProjectDirectory)\assembly" />
+    <RemoveDir Directories="$(MSBuildProjectDirectory)\PowerCollection\bin" />
+    <Exec Command="docfx docfx_project/docfx.json -t statictoc" WorkingDirectory="$(MSBuildProjectDirectory)" />
+    <Exec Command="msbuild -t:pack -p:Configuration=$(TargetElement) -p:VersionPrefix=$(Major).$(Minor).$(Build)" WorkingDirectory="$(MSBuildProjectDirectory)\PowerCollection" />
+   </Target>
+  <Target Name="Build">
+    <CallTarget Targets="BeforeBuild" />
+  </Target>
+</Project>
