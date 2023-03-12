@@ -1,0 +1,53 @@
+name: Dispatch
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        configuration: [Debug, Release]
+
+    runs-on: windows-latest
+    permissions: 
+        contents: write
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Install .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+        
+    - name: Build solution and generate NuGet package
+      run: |  
+          cd PowerCollection
+          dotnet pack --configuration Release
+    - name: Push generated package to GitHub registry
+      run: |
+          cd ./PowerCollection/bin/Release/
+          $path = Get-ChildItem -Path Cthulhu-tech.PowerCollections.[0-9].[0-9].[0-9]-beta.nupkg
+          $path = $path[-1].fullname | Sort-Object LastAccessTime
+          dotnet nuget push $path --source github --api-key ${{ secrets.NUGET_API_KEY }} --skip-duplicate
+          
+    - name: Checkout
+      uses: actions/checkout@v1
+    - name: Get XML
+      id: getxml
+      uses: mavrosxristoforos/get-xml-info@1.0
+      with:
+        xml-file: 'PowerCollection/PowerCollections.csproj'
+        xpath: '//VersionPrefix'
+        
+    - name: Push Release
+      uses: ncipollo/release-action@v1
+      with: 
+        artifact: 'PowerCollection/bin/Release/*.nupkg'
+        tag: v${{ steps.getxml.outputs.info }}
+        token: ${{ secrets.NUGET_API_KEY }}
+        allowUpdates: true
