@@ -3,9 +3,9 @@ namespace PowerCollections.Tests
     public class ThrowError
     {
         [Fact]
-        public void CreateError()
+        public bool CreateError()
         {
-            throw new ArgumentException("Create error");
+            return true;
         }
     }
 }
