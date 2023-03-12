@@ -5,7 +5,7 @@ namespace PowerCollections.Tests
         [Fact]
         public void CreateError()
         {
-            throw new ArgumentException("Parameter cannot be null");
+            throw new ArgumentException("Create error");
         }
     }
 }
