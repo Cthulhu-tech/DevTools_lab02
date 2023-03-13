@@ -9,7 +9,7 @@ on:
       version:
         description: Version release
         required: false
-        default: ${{  github.ref_name }}
+        default: ${{ github.event.inputs.tag }}
 jobs:
   build:
     strategy:
