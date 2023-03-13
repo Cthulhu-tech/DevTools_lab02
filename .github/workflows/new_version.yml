@@ -10,8 +10,6 @@ on:
         description: Version release
         required: false
         default: ${{  github.ref_name }}
-        branches:
-          - task4
 jobs:
   build:
     strategy:
